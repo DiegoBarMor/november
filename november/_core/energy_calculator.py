@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 from openmm.app import PDBFile
 
 import november as nov
@@ -66,6 +67,18 @@ class EnergyCalculator:
         print("  Nonbonded:", self.get_enonbonded_sum())
         print("  ... LennardJones:", self.get_elennardj_sum())
         print("  ... Coulomb:", self.get_ecoulomb_sum())
+
+
+    # --------------------------------------------------------------------------
+    def save_energy_arrays(self, folder_output: str | Path):
+        folder_output = Path(folder_output)
+        folder_output.mkdir(parents = True, exist_ok = True)
+        np.save(folder_output / f"bonds.npy",     self._arr_bond_energies    )
+        np.save(folder_output / f"angles.npy",    self._arr_angle_energies   )
+        np.save(folder_output / f"propers.npy",   self._arr_proper_energies  )
+        np.save(folder_output / f"impropers.npy", self._arr_improper_energies)
+        np.save(folder_output / f"lennardjs.npy", self._arr_lennardj_energies)
+        np.save(folder_output / f"coulombs.npy",  self._arr_coulomb_energies )
 
 
     # --------------------------------------------------------------------------

@@ -14,7 +14,22 @@
 * Current forcefields packed along November (at `november/_data`):
     * `RNA.OL3.xml`
 
+<!-- ----------------------------------------------------------------------- -->
+# Examples
+* display energy sums:
+```python3 main.py testdata/1ato.pdb```
 
+* save energy arrays:
+```python3 main.py testdata/1ato.pdb testdata/output```
+
+
+<!-- ----------------------------------------------------------------------- -->
 # TODO
-* remove OpenMM dependency
-* improve `bond_graphs`'s graph data structure
+* improve CLI.
+* add documentation.
+* add more forcefields.
+* remove OpenMM dependency for PDB parsing.
+* improve `bond_graphs`'s graph data structure.
+* finish refactoring of parser base class and `forcefield.from_xml`.
+* allow to specify the forcefield to use in `main.py`, either by path or by name.
+* add option for saving the molecule's topology features (bonds, angles, etc), as well as their geometry values.
