@@ -45,19 +45,18 @@ class ForceField:
             )
         ff_data["types"] = ffatomtypes
 
-        for child_res in node_resids.children:
-            resname = child_res.get_attr("name")
-            atoms = {}
-            for child_atom in child_res.children:
-                if child_atom.tag_name != "Atom": continue
-                name = child_atom.get_attr("name")
-                t1 = child_atom.get_attr("type")
-                atoms[name] = nov.FFAtom(
-                    name      = name,
-                    charge    = float(child_atom.get_attr("charge")),
-                    atom_type = ffatomtypes[t1],
-                )
-            ff_data["residues"][resname] = nov.FFResidue(resname, atoms)
+        for residue_node in node_resids.children:
+            resname = residue_node.get_attr("name")
+            atom_nodes = list(filter(lambda c: c.tag_name == "Atom", residue_node.children))
+            atoms = [
+                nov.FFAtom(
+                    name      = node.get_attr("name"),
+                    charge    = float(node.get_attr("charge")),
+                    atom_type = ffatomtypes[node.get_attr("type")],
+                ) for node in atom_nodes
+            ]
+            atom_names = [node.get_attr("name") for node in atom_nodes]
+            ff_data["residues"][resname] = nov.FFResidue(resname, atoms, atom_names)
 
 
         for child in node_bonds.children:
@@ -124,12 +123,14 @@ class ForceField:
 
         return cls(ff_data)
 
+
     # --------------------------------------------------------------------------
     def omm2ff(self, atom) -> nov.FFAtom:
         """
         Convert an OpenMM atom to a FF atom.
         """
-        return self._ffresidues[atom.residue.name].atoms[atom.name]
+        ff_residue: nov.FFResidue = self._ffresidues[atom.residue.name]
+        return ff_residue.get_by_name(atom.name)
 
 
     # --------------------------------------------------------------------------
