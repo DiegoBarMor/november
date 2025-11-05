@@ -38,7 +38,7 @@ class FFBond(nov.FFInteraction):
             if key in _current_map:
                 return _current_map[key]
 
-        raise KeyError(f"Bond type not found: {key}")
+        raise KeyError(f"{cls.__name__} type not found: {key}")
 
 
     # --------------------------------------------------------------------------

@@ -4,7 +4,6 @@ import november as nov
 class ForceField:
     def __init__(self, ff_data: dict):
         self._ffresidues  = ff_data["residues"]
-        self._ffangles    = ff_data["angles"]
         self._ffdiheds    = ff_data["diheds"]
         self._ffnonbonded = ff_data["nonbonded"]
 
@@ -31,7 +30,7 @@ class ForceField:
 
         ff_data = {
             "types": {}, "residues": {},
-            "angles": {}, "diheds": {}, "nonbonded": {},
+            "diheds": {}, "nonbonded": {},
             "LJ14SCALE":      float(node_nonbonded.get_attr("lj14scale")),
             "COULOMB14SCALE": float(node_nonbonded.get_attr("coulomb14scale")),
         }
@@ -79,26 +78,25 @@ class ForceField:
                 strs_types = strs_types, strs_classes = strs_classes,
             )
 
-        return cls(ff_data) # [WIP]
-
 
         for child in node_angles.children:
-            types = (
+            strs_types = (
                 child.get_attr("type1"),
                 child.get_attr("type2"),
                 child.get_attr("type3"),
             )
-            classes = (
+            strs_classes = (
                 child.get_attr("class1"),
                 child.get_attr("class2"),
                 child.get_attr("class3"),
             )
-            ff_data["angles"][types] = nov.FFAngle(
+            nov.FFAngle.register_angle(
                 k     = float(child.get_attr("k")),
                 angle = float(child.get_attr("angle")),
-                types = types, classes = classes,
+                strs_types = strs_types, strs_classes = strs_classes,
             )
 
+        return cls(ff_data) # [WIP]
 
         for child in node_diheds.children:
             types = (
@@ -165,12 +163,7 @@ class ForceField:
         ff_a0 = self.omm2ff(atom0)
         ff_a1 = self.omm2ff(atom1)
         ff_a2 = self.omm2ff(atom2)
-
-        for key in nov.FFAngle.iter_possible_keys(ff_a0, ff_a1, ff_a2):
-            if key in self._ffangles.keys():
-                return self._ffangles[key]
-
-        raise KeyError(f"Angle type not found: {ff_a0.atom_type.name}-{ff_a1.atom_type.name}-{ff_a2.atom_type.name}")
+        return nov.FFAngle.get_angle(ff_a0, ff_a1, ff_a2)
 
 
     # --------------------------------------------------------------------------

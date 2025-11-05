@@ -1,3 +1,5 @@
+from ._tables import TABLE_ATOMNAME_ALIASES
+
 # //////////////////////////////////////////////////////////////////////////////
 class PDBPostProcess:
     # --------------------------------------------------------------------------
@@ -25,22 +27,13 @@ class PDBPostProcess:
     # --------------------------------------------------------------------------
     @staticmethod
     def fix_prot_atomlabels_aliases(pdb):
-        for atom in pdb.atoms: # [WIP] crudely hardcoded to at least support the prot.pdb example
-            if (atom.residue.resname.endswith("ASP")):
-                match atom.name:
-                    case "HB1": atom.name = "HB3"
-                continue
-
-            if (atom.residue.resname.endswith("ILE")):
-                match atom.name:
-                    case "CD": atom.name = "CD1"
-                continue
-
-            if (atom.residue.resname.endswith("GLU")):
-                match atom.name:
-                    case "HB1": atom.name = "HB3"
-                    case "HG1": atom.name = "HG3"
-                continue
+        # [WIP] crudely hardcoded to at least support the prot.pdb example
+        for atom in pdb.atoms:
+            for resname, atom_aliases in TABLE_ATOMNAME_ALIASES.items():
+                if atom.residue.resname.endswith(resname):
+                    if atom.name in atom_aliases:
+                        atom.name = atom_aliases[atom.name]
+                    break
 
 
     # --------------------------------------------------------------------------

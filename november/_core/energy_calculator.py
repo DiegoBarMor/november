@@ -33,9 +33,9 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def calc_energies_prot(self) -> "EnergyCalculator":
+        nov.PDBPostProcess.fix_prot_atomlabels_aliases(self._pdb)
         nov.PDBPostProcess.fix_prot_reslabels_aliases(self._pdb)
         nov.PDBPostProcess.fix_prot_reslabels_termini(self._pdb)
-        nov.PDBPostProcess.fix_prot_atomlabels_aliases(self._pdb)
         self._calc_energies()
         return self
 
@@ -93,9 +93,9 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def _calc_energies(self):
-        ##### custom_e = (1 ± ε) * openmm_e
+        ##### november_e = (1 ± ε) * openmm_e
         self._calc_ebonded()   # ε = 1e-14
-        # self._calc_eangles()   # ε = 1e-15
+        self._calc_eangles()   # ε = 1e-15
         # self._calc_ediheds()   # ε = 1e-4
         # self._calc_nonbonded() # ε = 1e-6
 
