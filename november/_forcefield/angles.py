@@ -26,7 +26,7 @@ class FFAngle(nov.FFInteraction):
         strs_types:   tuple[str|None, str|None, str|None],
         strs_classes: tuple[str|None, str|None, str|None],
     ):
-        cls._decide_using_names(strs_types, strs_classes)
+        cls._decide_whether_using_names(strs_types, strs_classes)
         fftypes = cls._get_fftypes(strs_types, strs_classes)
         obj_angle = cls(k, angle, *fftypes)
         cls._register_interaction(strs_types, strs_classes, obj_angle)

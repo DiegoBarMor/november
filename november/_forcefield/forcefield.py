@@ -4,7 +4,6 @@ import november as nov
 class ForceField:
     def __init__(self, ff_data: dict):
         self._ffresidues  = ff_data["residues"]
-        self._ffdiheds    = ff_data["diheds"]
         self._ffnonbonded = ff_data["nonbonded"]
 
         self.one_4pi_eps0 = nov.FFNonBonded.ONE_4PI_EPS0
@@ -29,8 +28,7 @@ class ForceField:
         node_nonbonded = node_ff.get_child_by_name("NonbondedForce")
 
         ff_data = {
-            "types": {}, "residues": {},
-            "diheds": {}, "nonbonded": {},
+            "types": {}, "residues": {}, "nonbonded": {},
             "LJ14SCALE":      float(node_nonbonded.get_attr("lj14scale")),
             "COULOMB14SCALE": float(node_nonbonded.get_attr("coulomb14scale")),
         }
@@ -96,38 +94,35 @@ class ForceField:
                 strs_types = strs_types, strs_classes = strs_classes,
             )
 
-        return cls(ff_data) # [WIP]
 
         for child in node_diheds.children:
-            types = (
+            strs_types = (
                 child.get_attr("type1"),
                 child.get_attr("type2"),
                 child.get_attr("type3"),
                 child.get_attr("type4"),
             )
-            classes = (
+            strs_classes = (
                 child.get_attr("class1"),
                 child.get_attr("class2"),
                 child.get_attr("class3"),
                 child.get_attr("class4"),
             )
-            ff_data["diheds"][types] = nov.FFDihedral(
+            nov.FFDihedral.register_dihed(
                 isProper = child.tag_name == "Proper",
-                k1 = _safe_float(child.get_attr("k1")),
-                k2 = _safe_float(child.get_attr("k2")),
-                k3 = _safe_float(child.get_attr("k3")),
-                k4 = _safe_float(child.get_attr("k4")),
-                periodicity1 = _safe_int(child.get_attr("periodicity1")),
-                periodicity2 = _safe_int(child.get_attr("periodicity2")),
-                periodicity3 = _safe_int(child.get_attr("periodicity3")),
-                periodicity4 = _safe_int(child.get_attr("periodicity4")),
-                phase1 = _safe_float(child.get_attr("phase1")),
-                phase2 = _safe_float(child.get_attr("phase2")),
-                phase3 = _safe_float(child.get_attr("phase3")),
-                phase4 = _safe_float(child.get_attr("phase4")),
-                types = types, classes = classes,
+                ks = [
+                    _safe_float(child.get_attr(f"k{i}")) for i in range(1,5)
+                ],
+                periodicities = [
+                    _safe_int(child.get_attr(f"periodicity{i}")) for i in range(1,5)
+                ],
+                phases = [
+                    _safe_float(child.get_attr(f"phase{i}")) for i in range(1,5)
+                ],
+                strs_types = strs_types, strs_classes = strs_classes,
             )
 
+        return cls(ff_data) # [WIP]
 
         for child in node_nonbonded.children:
             if child.tag_name != "Atom": continue
@@ -174,16 +169,10 @@ class ForceField:
             ff_a1 = self.omm2ff(a1)
             ff_a2 = self.omm2ff(a2)
             ff_a3 = self.omm2ff(a3)
-
-            key = (
-                ff_a0.atom_type.name if mask[0] else '',
-                ff_a1.atom_type.name if mask[1] else '',
-                ff_a2.atom_type.name if mask[2] else '',
-                ff_a3.atom_type.name if mask[3] else '',
-            )
-            if key in self._ffdiheds.keys():
+            dihed = nov.FFDihedral.get_dihed(ff_a0, ff_a1, ff_a2, ff_a3, mask)
+            if dihed is not None:
                 ordered_idxs = (a0.index, a1.index, a2.index, a3.index)
-                yield self._ffdiheds[key], ordered_idxs
+                yield dihed, ordered_idxs
 
 
     # --------------------------------------------------------------------------
@@ -199,16 +188,10 @@ class ForceField:
             ff_a1 = self.omm2ff(a0)
             ff_a2 = self.omm2ff(a2)
             ff_a3 = self.omm2ff(a3)
-
-            key = (
-                ff_a0.atom_type.name if mask[0] else '',
-                ff_a1.atom_type.name if mask[1] else '',
-                ff_a2.atom_type.name if mask[2] else '',
-                ff_a3.atom_type.name if mask[3] else '',
-            )
-            if key in self._ffdiheds.keys():
+            dihed = nov.FFDihedral.get_dihed(ff_a0, ff_a1, ff_a2, ff_a3, mask)
+            if dihed is not None:
                 ordered_idxs = (a0.index, a1.index, a2.index, a3.index)
-                yield self._ffdiheds[key], ordered_idxs
+                yield dihed, ordered_idxs
 
 
     # --------------------------------------------------------------------------

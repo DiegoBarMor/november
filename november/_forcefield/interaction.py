@@ -4,7 +4,7 @@ import november as nov
 
 # //////////////////////////////////////////////////////////////////////////////
 class FFInteraction(ABC):
-    _ATOMTYPES_BY_NAME = {}
+    _ATOMTYPES_BY_NAME  = {}
     _ATOMTYPES_BY_CLASS = {}
     _USING_NAMES = None # will be set to True/False upon first interaction registered
     _MAP_INTERACTION_BY_NAME  = {}
@@ -19,7 +19,7 @@ class FFInteraction(ABC):
 
     # --------------------------------------------------------------------------
     @classmethod
-    def _decide_using_names(cls,
+    def _decide_whether_using_names(cls,
         strs_types: tuple[str|None,...], strs_classes: tuple[str|None,...]
     ):
         if cls._USING_NAMES is not None: return
@@ -47,13 +47,14 @@ class FFInteraction(ABC):
     def _get_current_map(cls):
         return cls._MAP_INTERACTION_BY_NAME if cls._USING_NAMES else cls._MAP_INTERACTION_BY_CLASS
 
+
     # --------------------------------------------------------------------------
     @classmethod
     def _get_fftypes(cls,
         str_types: tuple[str,...], str_classes: tuple[str,...]
     ) -> list["nov.FFAtomType"]:
         return [
-            cls._ATOMTYPES_BY_NAME[t] for t in str_types
+            cls._ATOMTYPES_BY_NAME.get(t) for t in str_types
         ] if cls._USING_NAMES else [
             cls._ATOMTYPES_BY_CLASS.get(c) for c in str_classes
         ]

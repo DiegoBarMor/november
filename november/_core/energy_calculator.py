@@ -96,7 +96,7 @@ class EnergyCalculator:
         ##### november_e = (1 ± ε) * openmm_e
         self._calc_ebonded()   # ε = 1e-14
         self._calc_eangles()   # ε = 1e-15
-        # self._calc_ediheds()   # ε = 1e-4
+        self._calc_ediheds()   # ε = 1e-4
         # self._calc_nonbonded() # ε = 1e-6
 
 
