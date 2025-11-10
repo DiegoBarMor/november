@@ -2,4 +2,9 @@ desktop.ini
 __pycache__/
 .vscode/
 
+install.sh
+upload.sh
+
 tests/data/output/
+dist/
+november.egg-info/

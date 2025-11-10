@@ -15,6 +15,10 @@
     * `RNA.OL3.xml`
 
 <!-- ----------------------------------------------------------------------- -->
+# Requirements
+* currently depends on `MDAnalysis` for parsing the PDB structures
+
+<!-- ----------------------------------------------------------------------- -->
 # Examples
 * display energy sums:
 ```python3 main.py rna  testdata/1ato.pdb```
