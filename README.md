@@ -12,7 +12,8 @@
     * XML
 
 * Current forcefields packed along NovemberFF (at `novemberff/_data`):
-    * `RNA.OL3.xml`
+    * `RNA.OL3.xml` for RNA
+    * `amber99sb.xml` for protein
 
 <!-- ----------------------------------------------------------------------- -->
 # Requirements
@@ -38,5 +39,5 @@
 * improve `bond_graphs`'s graph data structure.
 * improve the residue/atom labels fixing procedures.
 * finish refactoring of parser base class and `forcefield.from_xml` (i.e. should be Parser's responsability to yield the needed data, not Forcefield).
-* allow to specify the forcefield to use in `main.py`, either by path or by name.
+* allow to specify the forcefield to use in `main.py`.
 * add option for saving the molecule's topology features (bonds, angles, etc), as well as their geometry values.

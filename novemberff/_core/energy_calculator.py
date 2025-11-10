@@ -6,7 +6,7 @@ import novemberff as nov
 
 # //////////////////////////////////////////////////////////////////////////////
 class EnergyCalculator:
-    def __init__(self, path_pdb, path_forcefield):
+    def __init__(self, path_pdb: Path, forcefield: str | Path):
         self._path_pdb = path_pdb
 
         self._pdb = mda.Universe(str(path_pdb), to_guess = ["elements", "bonds"])
@@ -14,7 +14,8 @@ class EnergyCalculator:
             self._pdb.atoms, self._pdb.bonds,
             coords = self._pdb.atoms.positions
         )
-        self._forcefield = nov.ForceField.from_xml(path_forcefield)
+        path_xml = nov.Utils.solve_forcefield_path(forcefield)
+        self._forcefield = nov.ForceField.from_xml(path_xml)
 
         self._natoms     = len(self._bgraph.atoms)
         self._nbonds     = len(self._bgraph.bonds)
@@ -29,6 +30,20 @@ class EnergyCalculator:
         self._arr_improper_energies = np.zeros(self._nimpropers)
         self._arr_lennardj_energies = np.zeros(self._nnonbonded)
         self._arr_coulomb_energies  = np.zeros(self._nnonbonded)
+
+
+    # --------------------------------------------------------------------------
+    @classmethod
+    def with_prot_ff(cls, path_pdb: Path) -> "EnergyCalculator":
+        """Initialize EnergyCalculator with a default protein force field (Amber99SB)."""
+        return cls(path_pdb, "amber99sb")
+
+
+    # --------------------------------------------------------------------------
+    @classmethod
+    def with_rna_ff(cls, path_pdb: Path) -> "EnergyCalculator":
+        """Initialize EnergyCalculator with a default RNA force field (RNA.OL3)."""
+        return cls(path_pdb, "rna.ol3")
 
 
     # --------------------------------------------------------------------------

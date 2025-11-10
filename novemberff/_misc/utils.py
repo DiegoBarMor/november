@@ -1,3 +1,5 @@
+from pathlib import Path
+
 # //////////////////////////////////////////////////////////////////////////////
 class Utils:
     # --------------------------------------------------------------------------
@@ -36,6 +38,20 @@ class Utils:
         for mask in masks:
             for combo in combinations:
                 yield combo, mask
+
+
+    # --------------------------------------------------------------------------
+    @staticmethod
+    def solve_forcefield_path(ff_name: str) -> str:
+        folder_data = Path(__file__).parent.parent / "_data"
+        map_name2path = {
+            "amber99sb": folder_data / "amber99sb.xml",
+            "rna.ol3":   folder_data / "RNA.OL3.xml",
+        }
+        ff_path = map_name2path.get(ff_name.lower(), Path(ff_name))
+        if not ff_path.exists():
+            raise FileNotFoundError(f"Force field XML file not found: {ff_path}")
+        return str(ff_path)
 
 
 # //////////////////////////////////////////////////////////////////////////////

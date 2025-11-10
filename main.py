@@ -10,11 +10,7 @@ if __name__ == "__main__":
     try:
         MODE     = sys.argv[1].lower()
         PATH_PDB = sys.argv[2]
-        if MODE == "prot":
-            PATH_XML = "novemberff/_data/amber99sb.xml"
-        elif MODE == "rna":
-            PATH_XML = "novemberff/_data/RNA.OL3.xml"
-        else:
+        if MODE not in ("prot", "rna"):
             raise ValueError()
 
     except (IndexError, ValueError):
@@ -22,10 +18,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-    calc = nov.EnergyCalculator(PATH_PDB, PATH_XML)
     if MODE == "prot":
+        calc = nov.EnergyCalculator.with_prot_ff(PATH_PDB)
         calc.calc_energies_prot()
     else:
+        calc = nov.EnergyCalculator.with_rna_ff(PATH_PDB)
         calc.calc_energies_rna()
 
 
