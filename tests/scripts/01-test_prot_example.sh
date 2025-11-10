@@ -8,7 +8,7 @@ output="$(python3 main.py prot tests/data/prot.pdb)"
 end_time=$(date +%s)
 
 expected="$(cat <<'EOF'
->>> Amber energies (November) for 'tests/data/prot.pdb':
+>>> Amber energies (NovemberFF) for 'tests/data/prot.pdb':
   BondEnergy: 535.5952440258552
   AngleEnergy: 1740.148996314636
   DihedEnergy: 1632.2866727153953

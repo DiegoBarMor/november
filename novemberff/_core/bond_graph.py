@@ -2,7 +2,7 @@ import math
 import numpy as np
 from enum import Enum, auto
 
-import november as nov
+import novemberff as nov
 
 # //////////////////////////////////////////////////////////////////////////////
 class BondEdgeDist(Enum):

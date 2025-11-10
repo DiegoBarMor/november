@@ -1,6 +1,6 @@
 import math
 
-import november as nov
+import novemberff as nov
 
 # //////////////////////////////////////////////////////////////////////////////
 class FFDihedral(nov.FFInteraction):

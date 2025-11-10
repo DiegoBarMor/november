@@ -1,6 +1,6 @@
 from abc import ABC
 
-import november as nov
+import novemberff as nov
 
 # //////////////////////////////////////////////////////////////////////////////
 class FFInteraction(ABC):

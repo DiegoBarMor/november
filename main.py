@@ -1,7 +1,7 @@
 import sys
 import warnings
 
-import november as nov
+import novemberff as nov
 
 ################################################################################
 if __name__ == "__main__":
@@ -11,9 +11,9 @@ if __name__ == "__main__":
         MODE     = sys.argv[1].lower()
         PATH_PDB = sys.argv[2]
         if MODE == "prot":
-            PATH_XML = "november/_data/amber99sb.xml"
+            PATH_XML = "novemberff/_data/amber99sb.xml"
         elif MODE == "rna":
-            PATH_XML = "november/_data/RNA.OL3.xml"
+            PATH_XML = "novemberff/_data/RNA.OL3.xml"
         else:
             raise ValueError()
 

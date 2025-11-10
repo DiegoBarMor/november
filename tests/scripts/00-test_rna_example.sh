@@ -8,7 +8,7 @@ output="$(python3 main.py rna tests/data/1ato.pdb)"
 end_time=$(date +%s)
 
 expected="$(cat <<'EOF'
->>> Amber energies (November) for 'tests/data/1ato.pdb':
+>>> Amber energies (NovemberFF) for 'tests/data/1ato.pdb':
   BondEnergy: 136.737504951933
   AngleEnergy: 172.93445492701437
   DihedEnergy: 1976.3687249939167

@@ -1,4 +1,4 @@
-import november as nov
+import novemberff as nov
 
 ### [AS DEFINED IN] platforms/reference/include/SimTKOpenMMRealType.h
 M_PI = 3.14159265358979323846

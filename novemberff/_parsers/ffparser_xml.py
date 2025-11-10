@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-import november as nov
+import novemberff as nov
 
 # ////////////////////////////////////////////////////////////////////////////////
 class State(Enum):

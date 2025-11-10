@@ -2,7 +2,7 @@ import numpy as np
 from pathlib import Path
 import MDAnalysis as mda
 
-import november as nov
+import novemberff as nov
 
 # //////////////////////////////////////////////////////////////////////////////
 class EnergyCalculator:
@@ -70,7 +70,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def display_energies(self):
-        print(f">>> Amber energies (November) for '{self._path_pdb}':")
+        print(f">>> Amber energies (NovemberFF) for '{self._path_pdb}':")
         print("  BondEnergy:",  self.get_ebond_sum())
         print("  AngleEnergy:", self.get_eangle_sum())
         print("  DihedEnergy:", self.get_edihed_sum())
@@ -93,7 +93,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def _calc_energies(self):
-        ##### november_e = (1 ± ε) * openmm_e
+        ##### novemberff_e = (1 ± ε) * openmm_e
         self._calc_ebonded()   # ε = 1e-14
         self._calc_eangles()   # ε = 1e-15
         self._calc_ediheds()   # ε = 1e-4
