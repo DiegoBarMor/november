@@ -70,7 +70,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def display_energies(self):
-        print(f">>> Amber energies (Custom) for '{self._path_pdb}':")
+        print(f">>> Amber energies (November) for '{self._path_pdb}':")
         print("  BondEnergy:",  self.get_ebond_sum())
         print("  AngleEnergy:", self.get_eangle_sum())
         print("  DihedEnergy:", self.get_edihed_sum())

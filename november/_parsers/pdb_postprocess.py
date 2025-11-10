@@ -5,16 +5,18 @@ class PDBPostProcess:
     # --------------------------------------------------------------------------
     @staticmethod
     def fix_prot_reslabels_aliases(pdb):
-        for res in pdb.residues: # [WIP] hardcoded for now to work with amber99sb.xml
+        ### [WIP] hardcoded for now for the prot.pdb example
+        for res in pdb.residues:
             if res.resname == "HIS": res.resname = "HIE"
 
 
     # --------------------------------------------------------------------------
     @staticmethod
     def fix_prot_reslabels_termini(pdb):
+        ### [WIP] needs improvement, e.g. for multiple chains
         residues = list(pdb.residues)
         nres = len(residues)
-        for i,res in enumerate(residues): # [WIP] needs improvement, e.g. for multiple chains
+        for i,res in enumerate(residues):
             if i == 0:
                 res.resname = f"N{res.resname}"
             elif i == nres - 1:
@@ -27,7 +29,7 @@ class PDBPostProcess:
     # --------------------------------------------------------------------------
     @staticmethod
     def fix_prot_atomlabels_aliases(pdb):
-        # [WIP] crudely hardcoded to at least support the prot.pdb example
+        ### [WIP] crudely hardcoded to at least support the prot.pdb example
         for atom in pdb.atoms:
             for resname, atom_aliases in TABLE_ATOMNAME_ALIASES.items():
                 if atom.residue.resname.endswith(resname):
@@ -39,6 +41,7 @@ class PDBPostProcess:
     # --------------------------------------------------------------------------
     @staticmethod
     def fix_rna_reslabels_termini(pdb):
+        ### [WIP] improve this
         for res in pdb.residues:
             res_type = res.resname[0]
             if res_type not in "UCAG": continue

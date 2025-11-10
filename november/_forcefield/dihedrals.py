@@ -76,8 +76,8 @@ class FFDihedral(nov.FFInteraction):
         if self.isProper ^ proper: return 0
 
         ### [ORIGINAL SOURCE] platforms/reference/src/SimTKReference/ReferenceProperDihedralBond.cpp@ReferenceProperDihedralBond::calculateBondIxn
-        delta_angle = periodicity * angle - phase # [WIP]
-        return k * (1.0 + math.cos(delta_angle)) # [WIP]
+        delta_angle = periodicity * angle - phase
+        return k * (1.0 + math.cos(delta_angle))
 
 
     # --------------------------------------------------------------------------
