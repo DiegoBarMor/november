@@ -9,12 +9,12 @@ end_time=$(date +%s)
 
 expected="$(cat <<'EOF'
 >>> Amber energies (NovemberFF) for 'tests/data/prot.pdb':
-  BondEnergy: 535.5952440258552
-  AngleEnergy: 1740.148996314636
-  DihedEnergy: 1632.2866727153953
-  Nonbonded: -3755.386936876314
-  ... LennardJones: -415.9121389249436
-  ... Coulomb: -3339.4747979513704
+  BondEnergy: 530.5695854268687
+  AngleEnergy: 1417.0459736853202
+  DihedEnergy: 1558.1120122187128
+  Nonbonded: -4111.194768700928
+  ... LennardJones: -514.9366739454682
+  ... Coulomb: -3596.2580947554598
 EOF
 )"
 

@@ -1,7 +1,7 @@
 >>> Amber energies (OpenMM) for '../novemberff/testdata/prot.pdb':
-  HarmonicBondForce: 535.5972782751583 kJ/mol
-  PeriodicTorsionForce: 1632.251484805067 kJ/mol
-  NonbondedForce: -3755.3833946860555 kJ/mol
+  HarmonicBondForce: 530.5702999377893 kJ/mol
+  PeriodicTorsionForce: 1558.1406777922987 kJ/mol
+  NonbondedForce: -4111.196691969219 kJ/mol
   CMMotionRemover: 0.0 kJ/mol
-  HarmonicAngleForce: 1740.146562625573 kJ/mol
-  CustomGBForce: -3245.184641183914 kJ/mol
+  HarmonicAngleForce: 1417.0449859735943 kJ/mol
+  CustomGBForce: -3086.884894245297 kJ/mol

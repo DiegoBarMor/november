@@ -8,3 +8,4 @@ upload.sh
 tests/data/output/
 dist/
 novemberff.egg-info/
+tmp/
