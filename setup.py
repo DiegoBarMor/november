@@ -12,6 +12,9 @@ setup(
     url="https://github.com/diegobarmor/novemberff",
     license="MIT",
     packages=find_packages(),
+    package_data={
+        "novemberff": ["_data/*"],
+    },
     install_requires=[],
     classifiers=[
         "Programming Language :: Python :: 3",
