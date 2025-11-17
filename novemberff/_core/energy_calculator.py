@@ -94,11 +94,6 @@ class EnergyCalculator:
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ GETTERS / SETTERS
     # --------------------------------------------------------------------------
-    def get_nframes(self) -> int:
-        if self._traj is None: return 1
-        return len(self._traj.trajectory)
-
-    # --------------------------------------------------------------------------
     def get_natoms(self)     -> int: return self._natoms
     def get_nbonds(self)     -> int: return self._nbonds
     def get_nangles(self)    -> int: return self._nangles
@@ -109,6 +104,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_ebond(self) -> np.ndarray:
+        """Returns the array of bond energies. Calculates its values if not already done."""
         if not self._do_bonds: return np.zeros(0)
 
         if not self._computed_bonds:
@@ -117,6 +113,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_eangle(self) -> np.ndarray:
+        """Returns the array of angle energies. Calculates its values if not already done."""
         if not self._do_angles: return np.zeros(0)
 
         if not self._computed_angles:
@@ -125,6 +122,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_eproper(self) -> np.ndarray:
+        """Returns the array of proper dihedral energies. Calculates its values if not already done."""
         if not self._do_diheds: return np.zeros(0)
 
         if not self._computed_diheds:
@@ -133,6 +131,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_eimproper(self) -> np.ndarray:
+        """Returns the array of improper dihedral energies. Calculates its values if not already done."""
         if not self._do_diheds: return np.zeros(0)
 
         if not self._computed_diheds:
@@ -141,6 +140,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_elennardj(self) -> np.ndarray:
+        """Returns the array of Lennard-Jones energies. Calculates its values if not already done."""
         if not self._do_nonbonded: return np.zeros(0)
 
         if not self._computed_nonbonded:
@@ -149,6 +149,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_ecoulomb(self) -> np.ndarray:
+        """Returns the array of Coulomb energies. Calculates its values if not already done."""
         if not self._do_nonbonded: return np.zeros(0)
 
         if not self._computed_nonbonded:
@@ -157,6 +158,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_edihed(self) -> np.ndarray:
+        """Returns the array of dihedral energies (proper + improper). Calculates its values if not already done."""
         if not self._do_diheds: return np.zeros(0)
 
         return np.concat((
@@ -165,6 +167,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def get_array_enonbonded(self) -> np.ndarray:
+        """Returns the array of nonbonded energies (Lennard-Jones + Coulomb). Calculates its values if not already done."""
         if not self._do_nonbonded: return np.zeros(0)
 
         return np.concat((
@@ -189,6 +192,7 @@ class EnergyCalculator:
 
     # --------------------------------------------------------------------------
     def set_positions(self, positions: np.ndarray):
+        """Update the internal atom positions."""
         self._pdb.atoms.positions = positions
         self._bgraph.set_positions(positions)
 
@@ -200,33 +204,37 @@ class EnergyCalculator:
         self._traj = mda.Universe(str(self._path_pdb), str(path_xtc))
 
     # --------------------------------------------------------------------------
-    def itercalc_traj_energies(self):
+    def get_nframes(self) -> int:
+        if self._traj is None: return 1
+        return len(self._traj.trajectory)
+
+    # --------------------------------------------------------------------------
+    def iter_traj(self):
+        """Generator that yields the current trajectory's frame indices while updating the internal atom positions.
+        Yields:
+            The current frame index (int).
+        """
         self._assert_traj_loaded()
         for i,_ in enumerate(self._traj.trajectory):
             self.reset_computed_status()
             self.set_positions(self._traj.atoms.positions)
-            yield (
-                i,
-                self.get_array_ebond(),
-                self.get_array_eangle(),
-                self.get_array_edihed(),
-                self.get_array_enonbonded(),
-            )
+            yield i
 
     # --------------------------------------------------------------------------
     def get_traj_energy_arrays(self, verbose = False) -> tuple[np.ndarray[float, float] | None]:
-        self._assert_traj_loaded()
-
+        """Iterate over the loaded trajectory and compute energy arrays for each frame.
+        Returns:
+            A tuple of 4 numpy arrays (mat_ebond, mat_eangle, mat_edihed, mat_ennb), each of shape (nframes, ninteractions).
+            If an interaction type is disabled, its corresponding array will be None.
+        """
         nframes = self.get_nframes()
         mat_ebond  = np.zeros((nframes, self.get_nbonds()))     if self._do_bonds     else None
         mat_eangle = np.zeros((nframes, self.get_nangles()))    if self._do_angles    else None
         mat_edihed = np.zeros((nframes, self.get_ndiheds()))    if self._do_diheds    else None
         mat_ennb   = np.zeros((nframes, self.get_nnonbonded())) if self._do_nonbonded else None
 
-        for i,_ in enumerate(self._traj.trajectory):
+        for i in self.iter_traj():
             if verbose and not (i % 100): print(f"Progress: {i}/{nframes}")
-            self.reset_computed_status()
-            self.set_positions(self._traj.atoms.positions)
             if self._do_bonds:     mat_ebond [i,:] = self.get_array_ebond()
             if self._do_angles:    mat_eangle[i,:] = self.get_array_eangle()
             if self._do_diheds:    mat_edihed[i,:] = self.get_array_edihed()

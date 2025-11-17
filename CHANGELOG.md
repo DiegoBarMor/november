@@ -23,3 +23,4 @@
 
 ## [0.6.0]
 - Removed the `calc_energies` method. Energies are now implicitly calculate when calling an array getter method.
+- Replaced `itercalc_traj_energies` with a simpler `iter_traj`. The latter iterates over the loaded trajectory, updating atom positions and yielding the current frame index.
