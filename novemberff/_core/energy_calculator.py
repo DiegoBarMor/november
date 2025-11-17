@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 from pathlib import Path
 import MDAnalysis as mda
@@ -78,11 +77,12 @@ class EnergyCalculator:
 
 
     # --------------------------------------------------------------------------
-    def calc_energies(self):
-        if self._do_bonds:     self._calc_ebonded()
-        if self._do_angles:    self._calc_eangles()
-        if self._do_diheds:    self._calc_ediheds()
-        if self._do_nonbonded: self._calc_nonbonded()
+    def reset_computed_status(self):
+        self._computed_bonds     = False
+        self._computed_angles    = False
+        self._computed_diheds    = False
+        self._computed_nonbonded = False
+
 
     # --------------------------------------------------------------------------
     def has_run(self) -> bool:
@@ -90,48 +90,6 @@ class EnergyCalculator:
             self._computed_bonds  or self._computed_angles or
             self._computed_diheds or self._computed_nonbonded
         )
-
-
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TRAJECTORY METHODS
-    # --------------------------------------------------------------------------
-    def load_traj(self, path_xtc: Path):
-        self._path_xtc = path_xtc
-        self._traj = mda.Universe(str(self._path_pdb), str(path_xtc))
-
-    # --------------------------------------------------------------------------
-    def itercalc_traj_energies(self):
-        self._assert_traj_loaded()
-        for i,_ in enumerate(self._traj.trajectory):
-            self.set_positions(self._traj.atoms.positions)
-            self.calc_energies()
-            yield (
-                i,
-                self.get_array_ebond()      if self._do_bonds     else None,
-                self.get_array_eangle()     if self._do_angles    else None,
-                self.get_array_edihed()     if self._do_diheds    else None,
-                self.get_array_enonbonded() if self._do_nonbonded else None,
-            )
-
-    # --------------------------------------------------------------------------
-    def get_traj_energy_arrays(self, verbose = False) -> tuple[np.ndarray[float, float] | None]:
-        self._assert_traj_loaded()
-
-        nframes = self.get_nframes()
-        mat_ebond  = np.zeros((nframes, self.get_nbonds()))     if self._do_bonds     else None
-        mat_eangle = np.zeros((nframes, self.get_nangles()))    if self._do_angles    else None
-        mat_edihed = np.zeros((nframes, self.get_ndiheds()))    if self._do_diheds    else None
-        mat_ennb   = np.zeros((nframes, self.get_nnonbonded())) if self._do_nonbonded else None
-
-        for i,_ in enumerate(self._traj.trajectory):
-            if verbose and not (i % 100): print(f"Progress: {i}/{nframes}")
-            self.set_positions(self._traj.atoms.positions)
-            self.calc_energies()
-            if self._do_bonds:     mat_ebond [i,:] = self.get_array_ebond()
-            if self._do_angles:    mat_eangle[i,:] = self.get_array_eangle()
-            if self._do_diheds:    mat_edihed[i,:] = self.get_array_edihed()
-            if self._do_nonbonded: mat_ennb  [i,:] = self.get_array_enonbonded()
-
-        return mat_ebond, mat_eangle, mat_edihed, mat_ennb
 
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ GETTERS / SETTERS
@@ -150,49 +108,65 @@ class EnergyCalculator:
     def get_ndiheds(self)    -> int: return self._npropers + self._nimpropers
 
     # --------------------------------------------------------------------------
-    def get_array_ebond(self):
-        if not (self._computed_bonds):
-            warnings.warn("Bond energies have not been computed yet. Returning zeroed array.")
+    def get_array_ebond(self) -> np.ndarray:
+        if not self._do_bonds: return np.zeros(0)
+
+        if not self._computed_bonds:
+            self._calc_ebonded()
         return self._arr_bond_energies
 
     # --------------------------------------------------------------------------
-    def get_array_eangle(self):
-        if not (self._computed_angles):
-            warnings.warn("Angle energies have not been computed yet. Returning zeroed array.")
+    def get_array_eangle(self) -> np.ndarray:
+        if not self._do_angles: return np.zeros(0)
+
+        if not self._computed_angles:
+            self._calc_eangles()
         return self._arr_angle_energies
 
     # --------------------------------------------------------------------------
-    def get_array_eproper(self):
-        if not (self._computed_diheds):
-            warnings.warn("Proper dihedral energies have not been computed yet. Returning zeroed array.")
+    def get_array_eproper(self) -> np.ndarray:
+        if not self._do_diheds: return np.zeros(0)
+
+        if not self._computed_diheds:
+            self._calc_ediheds()
         return self._arr_proper_energies
 
     # --------------------------------------------------------------------------
-    def get_array_eimproper(self):
-        if not (self._computed_diheds):
-            warnings.warn("Improper dihedral energies have not been computed yet. Returning zeroed array.")
+    def get_array_eimproper(self) -> np.ndarray:
+        if not self._do_diheds: return np.zeros(0)
+
+        if not self._computed_diheds:
+            self._calc_ediheds()
         return self._arr_improper_energies
 
     # --------------------------------------------------------------------------
-    def get_array_elennardj(self):
-        if not (self._computed_nonbonded):
-            warnings.warn("Lennard-Jones energies have not been computed yet. Returning zeroed array.")
+    def get_array_elennardj(self) -> np.ndarray:
+        if not self._do_nonbonded: return np.zeros(0)
+
+        if not self._computed_nonbonded:
+            self._calc_nonbonded()
         return self._arr_lennardj_energies
 
     # --------------------------------------------------------------------------
-    def get_array_ecoulomb(self):
-        if not (self._computed_nonbonded):
-            warnings.warn("Coulomb energies have not been computed yet. Returning zeroed array.")
+    def get_array_ecoulomb(self) -> np.ndarray:
+        if not self._do_nonbonded: return np.zeros(0)
+
+        if not self._computed_nonbonded:
+            self._calc_nonbonded()
         return self._arr_coulomb_energies
 
     # --------------------------------------------------------------------------
-    def get_array_edihed(self):
+    def get_array_edihed(self) -> np.ndarray:
+        if not self._do_diheds: return np.zeros(0)
+
         return np.concat((
             self.get_array_eproper(), self.get_array_eimproper(),
         ))
 
     # --------------------------------------------------------------------------
-    def get_array_enonbonded(self):
+    def get_array_enonbonded(self) -> np.ndarray:
+        if not self._do_nonbonded: return np.zeros(0)
+
         return np.concat((
             self.get_array_elennardj(), self.get_array_ecoulomb(),
         ))
@@ -219,6 +193,48 @@ class EnergyCalculator:
         self._bgraph.set_positions(positions)
 
 
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TRAJECTORY METHODS
+    # --------------------------------------------------------------------------
+    def load_traj(self, path_xtc: Path):
+        self._path_xtc = path_xtc
+        self._traj = mda.Universe(str(self._path_pdb), str(path_xtc))
+
+    # --------------------------------------------------------------------------
+    def itercalc_traj_energies(self):
+        self._assert_traj_loaded()
+        for i,_ in enumerate(self._traj.trajectory):
+            self.reset_computed_status()
+            self.set_positions(self._traj.atoms.positions)
+            yield (
+                i,
+                self.get_array_ebond(),
+                self.get_array_eangle(),
+                self.get_array_edihed(),
+                self.get_array_enonbonded(),
+            )
+
+    # --------------------------------------------------------------------------
+    def get_traj_energy_arrays(self, verbose = False) -> tuple[np.ndarray[float, float] | None]:
+        self._assert_traj_loaded()
+
+        nframes = self.get_nframes()
+        mat_ebond  = np.zeros((nframes, self.get_nbonds()))     if self._do_bonds     else None
+        mat_eangle = np.zeros((nframes, self.get_nangles()))    if self._do_angles    else None
+        mat_edihed = np.zeros((nframes, self.get_ndiheds()))    if self._do_diheds    else None
+        mat_ennb   = np.zeros((nframes, self.get_nnonbonded())) if self._do_nonbonded else None
+
+        for i,_ in enumerate(self._traj.trajectory):
+            if verbose and not (i % 100): print(f"Progress: {i}/{nframes}")
+            self.reset_computed_status()
+            self.set_positions(self._traj.atoms.positions)
+            if self._do_bonds:     mat_ebond [i,:] = self.get_array_ebond()
+            if self._do_angles:    mat_eangle[i,:] = self.get_array_eangle()
+            if self._do_diheds:    mat_edihed[i,:] = self.get_array_edihed()
+            if self._do_nonbonded: mat_ennb  [i,:] = self.get_array_enonbonded()
+
+        return mat_ebond, mat_eangle, mat_edihed, mat_ennb
+
+
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ OUTPUT OPERATIONS
     # --------------------------------------------------------------------------
     def display_energies(self):
@@ -235,12 +251,12 @@ class EnergyCalculator:
     def save_energy_arrays(self, folder_output: str | Path):
         folder_output = Path(folder_output)
         folder_output.mkdir(parents = True, exist_ok = True)
-        np.save(folder_output / f"bonds.npy",     self._arr_bond_energies    )
-        np.save(folder_output / f"angles.npy",    self._arr_angle_energies   )
-        np.save(folder_output / f"propers.npy",   self._arr_proper_energies  )
-        np.save(folder_output / f"impropers.npy", self._arr_improper_energies)
-        np.save(folder_output / f"lennardjs.npy", self._arr_lennardj_energies)
-        np.save(folder_output / f"coulombs.npy",  self._arr_coulomb_energies )
+        np.save(folder_output / f"bonds.npy",     self.get_array_ebond()    )
+        np.save(folder_output / f"angles.npy",    self.get_array_eangle()   )
+        np.save(folder_output / f"propers.npy",   self.get_array_eproper()  )
+        np.save(folder_output / f"impropers.npy", self.get_array_eimproper())
+        np.save(folder_output / f"lennardjs.npy", self.get_array_elennardj())
+        np.save(folder_output / f"coulombs.npy",  self.get_array_ecoulomb() )
 
 
     # --------------------------------------------------------------------------

@@ -13,10 +13,13 @@
 - Fixed missing `package_data` in `setup.py`.
 - Added method to `EnergyCalculator` for saving metadata into a CSV file.
 
-## [0.5.0] - 2021-11-14
+## [0.5.0] - 2021-11-17
 - Renamed `Forcefield.omm2ff` into `Forcefield.map_mda2ff` and made it assert that the mapped atom is known
 - PDB adjustments are now done at the `EnergyCalculator.with_prot_ff` and `EnergyCalculator.with_rna_ff` constructors instead of doing it when calculating the energies.
 - A single `EnergyCalculator.calc_energies` method is now used instead.
 - Added possibility of loading a trajectory for iterating over its frames' energies. Depends on MDAnalysis for now.
 - Added method for toggling interactions, instead of passing them as arguments repetitively.
 - Added getters for nframes, natoms and ninteractions.
+
+## [0.6.0]
+- Removed the `calc_energies` method. Energies are now implicitly calculate when calling an array getter method.

@@ -21,8 +21,6 @@ if __name__ == "__main__":
         if MODE == "prot" else \
         nov.EnergyCalculator.with_rna_ff(PATH_PDB)
 
-    calc.calc_energies()
-
     if len(sys.argv) >= 4:
         FOLDER_OUTPUT = sys.argv[3]
         calc.save_energy_arrays(FOLDER_OUTPUT)
