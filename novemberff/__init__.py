@@ -1,3 +1,5 @@
+from .config import DEFAULT_PROT_FORCEFIELD, DEFAULT_RNA_FORCEFIELD
+
 from ._misc.utils import Utils
 
 from ._parsers.ffparser import ForceFieldParser

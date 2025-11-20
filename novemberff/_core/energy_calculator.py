@@ -51,7 +51,7 @@ class EnergyCalculator:
     @classmethod
     def with_prot_ff(cls, path_pdb: Path, path_xtc: Path | None = None) -> "EnergyCalculator":
         """Initialize EnergyCalculator with a default protein force field (Amber99SB) and applies relevant patches to the PDB."""
-        obj = cls(path_pdb, "amber99sb", path_xtc)
+        obj = cls(path_pdb, nov.DEFAULT_PROT_FORCEFIELD, path_xtc)
         nov.PDBPostProcess.fix_prot_atomlabels_aliases(obj._pdb)
         nov.PDBPostProcess.fix_prot_reslabels_aliases (obj._pdb)
         nov.PDBPostProcess.fix_prot_reslabels_termini (obj._pdb)
@@ -62,7 +62,7 @@ class EnergyCalculator:
     @classmethod
     def with_rna_ff(cls, path_pdb: Path, path_xtc: Path | None = None) -> "EnergyCalculator":
         """Initialize EnergyCalculator with a default RNA force field (RNA.OL3) and applies relevant patches to the PDB."""
-        obj = cls(path_pdb, "rna.ol3", path_xtc)
+        obj = cls(path_pdb, nov.DEFAULT_RNA_FORCEFIELD, path_xtc)
         nov.PDBPostProcess.fix_rna_reslabels_termini(obj._pdb)
         return obj
 

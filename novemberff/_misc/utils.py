@@ -43,12 +43,14 @@ class Utils:
     # --------------------------------------------------------------------------
     @staticmethod
     def solve_forcefield_path(ff_name: str) -> str:
+        key = ff_name.lower().rstrip(".xml")
         folder_data = Path(__file__).parent.parent / "_data"
         map_name2path = {
-            "amber99sb": folder_data / "amber99sb.xml",
-            "rna.ol3":   folder_data / "RNA.OL3.xml",
+            "amber99sb":     folder_data / "amber99sb.xml",
+            "amber99sb-ucb": folder_data / "amber99sb-ucb.xml",
+            "rna.ol3":       folder_data / "RNA.OL3.xml",
         }
-        ff_path = map_name2path.get(ff_name.lower(), Path(ff_name))
+        ff_path = map_name2path.get(key, Path(ff_name))
         if not ff_path.exists():
             raise FileNotFoundError(f"Force field XML file not found: {ff_path}")
         return str(ff_path)

@@ -7,14 +7,28 @@ start_time=$(date +%s)
 output="$(python3 main.py prot tests/data/prot.pdb)"
 end_time=$(date +%s)
 
+##### [TODO] improve this test (i.e. cover both force fields)
+### this is for "amber99sb" force field
+# expected="$(cat <<'EOF'
+# >>> Amber energies (NovemberFF) for 'tests/data/prot.pdb':
+#   BondEnergy: 530.5695854268687
+#   AngleEnergy: 1417.0459736853202
+#   DihedEnergy: 1558.1120122187128
+#   Nonbonded: -4111.194768700928
+#   ... LennardJones: -514.9366739454682
+#   ... Coulomb: -3596.2580947554598
+# EOF
+# )"
+
+### this is for "amber99sb-ucb" force field
 expected="$(cat <<'EOF'
 >>> Amber energies (NovemberFF) for 'tests/data/prot.pdb':
   BondEnergy: 530.5695854268687
-  AngleEnergy: 1417.0459736853202
-  DihedEnergy: 1558.1120122187128
-  Nonbonded: -4111.194768700928
-  ... LennardJones: -514.9366739454682
-  ... Coulomb: -3596.2580947554598
+  AngleEnergy: 1417.0459736859698
+  DihedEnergy: 1483.283758892638
+  Nonbonded: -3733.707309067252
+  ... LennardJones: -514.9367485386417
+  ... Coulomb: -3218.77056052861
 EOF
 )"
 

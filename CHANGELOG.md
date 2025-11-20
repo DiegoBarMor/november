@@ -26,4 +26,5 @@
 - Replaced `itercalc_traj_energies` with a simpler `iter_traj`. The latter iterates over the loaded trajectory, updating atom positions and yielding the current frame index.
 
 ## [0.6.1]
--  XML parser now ignores the XML declaration at the beginning of the file.
+- XML parser now ignores the XML declaration at the beginning of the file.
+- added a new default forcefield: `amber99sb-ucb.xml`.
