@@ -14,6 +14,7 @@
 * Current forcefields packed along NovemberFF (at `novemberff/_data`):
     * `RNA.OL3.xml` for RNA
     * `amber99sb.xml` for protein
+    * `amber99sb-ucb.xml` for protein
 
 <!-- ----------------------------------------------------------------------- -->
 # Requirements
@@ -43,3 +44,4 @@
 * allow to specify the forcefield to use in `main.py`.
 * improve the option for saving the molecule's topology features (bonds, angles, etc), as well as their geometry values. Add it to the CLI.  Add tests.
 * allow the XML parser to deal with files were new lines are missing.
+* improve `Utils.solve_forcefield_path`
