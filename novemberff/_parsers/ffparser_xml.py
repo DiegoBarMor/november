@@ -90,51 +90,46 @@ class FFParserXML(nov.ForceFieldParser):
 
         line = line.strip()
         for i,c in enumerate(line):
-            if state == State.START:
-                if line[i+1] == "/":
-                    state = State.END
-                elif c == "<":
-                    state = State.TAG_NAME
-                continue
+            match state:
+                case State.START:
+                    if line[i+1] == "/":
+                        state = State.END
+                    elif c == "<":
+                        state = State.TAG_NAME
+                    continue
 
-            if state == State.TAG_NAME:
-                if c == "?":
-                    return # ignore XML declaration for now
-                elif c == ">":
-                    state = State.TAG_CONTENT
-                elif c == " ":
-                    state = State.ATTRIBUTE_KEY
-                else:
-                    tag_name += c
-                continue
+                case State.TAG_NAME:
+                    match c:
+                        case "?": return # ignore XML declaration for now
+                        case ">": state = State.TAG_CONTENT
+                        case " ": state = State.ATTRIBUTE_KEY
+                        case _:   tag_name += c
+                    continue
 
-            if state == State.TAG_CONTENT:
-                if c == "<":
-                    state = State.END
-                else:
-                    tag_content += c
-                continue
+                case State.TAG_CONTENT:
+                    if c == "<":
+                        state = State.END
+                    else:
+                        tag_content += c
+                    continue
 
-            if state == State.ATTRIBUTE_KEY:
-                if c == "=":
-                    attributes[current_key] = ""
-                elif c == "\"":
-                    state = State.ATTRIBUTE_VAL
-                elif c == ">":
-                    state = State.TAG_CONTENT
-                elif c == "/":
-                    state = State.END
-                elif c != " ":
-                    current_key += c
-                continue
+                case State.ATTRIBUTE_KEY:
+                    match c:
+                        case "=":  attributes[current_key] = ""
+                        case "\"": state = State.ATTRIBUTE_VAL
+                        case ">":  state = State.TAG_CONTENT
+                        case "/":  state = State.END
+                        case " ":  continue
+                        case _:    current_key += c
+                    continue
 
-            if state == State.ATTRIBUTE_VAL:
-                if c == "\"":
-                    current_key = ""
-                    state = State.ATTRIBUTE_KEY
-                elif c != " ":
-                    attributes[current_key] += c
-                continue
+                case State.ATTRIBUTE_VAL:
+                    if c == "\"":
+                        current_key = ""
+                        state = State.ATTRIBUTE_KEY
+                    elif c != " ":
+                        attributes[current_key] += c
+                    continue
 
         return tag_name, attributes, tag_content, state == State.END
 

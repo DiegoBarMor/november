@@ -42,3 +42,4 @@
 * finish refactoring of parser base class and `forcefield.from_xml` (i.e. should be Parser's responsability to yield the needed data, not Forcefield).
 * allow to specify the forcefield to use in `main.py`.
 * improve the option for saving the molecule's topology features (bonds, angles, etc), as well as their geometry values. Add it to the CLI.  Add tests.
+* allow the XML parser to deal with files were new lines are missing.
