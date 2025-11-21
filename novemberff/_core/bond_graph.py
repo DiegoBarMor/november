@@ -29,6 +29,7 @@ class BondGraph:
         # ----------------------------------------------------------------------
         for bond in bonds: # init with direct bonds
             a1,a2 = bond
+            if not self._is_bond_allowed(a1, a2): continue
             self._bond_matrix[a1.index, a2.index] = 1
             self._bond_matrix[a2.index, a1.index] = 1
 
@@ -205,6 +206,32 @@ class BondGraph:
         if dist >  3: return BondEdgeDist.long
         if dist == 3: return BondEdgeDist.mid
         return BondEdgeDist.short
+
+
+    # ----------------------------------------------------------------------
+    def _is_bond_allowed(self, a0, a1) -> bool:
+        r0 = a0.residue
+        r1 = a1.residue
+        if r0 == r1: return True
+        if self._is_peptide_bond(a0, a1): return True
+        if self._is_nucleotide_bond(a0, a1): return True
+        return False
+
+
+    # ----------------------------------------------------------------------
+    def _is_peptide_bond(self, atom0, atom1) -> bool:
+        def is_valid(a0, a1):
+            # skip checking the residue indices for now
+            # though it would be more rigorous to do so
+            return a0.name == "C" and a1.name == "N"
+        return is_valid(atom0, atom1) or is_valid(atom1, atom0)
+
+
+    # ----------------------------------------------------------------------
+    def _is_nucleotide_bond(self, atom0, atom1) -> bool:
+        def is_valid(a0, a1):
+            return a0.name == "O3'" and a1.name == "P"
+        return is_valid(atom0, atom1) or is_valid(atom1, atom0)
 
 
 ################################################################################

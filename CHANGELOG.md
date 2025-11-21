@@ -29,3 +29,4 @@
 - XML parser now ignores the XML declaration at the beginning of the file.
 - added a new default forcefield: `amber99sb-ucb.xml`.
 - more descriptive errors are now obtained when an interaction is unknown.
+- added safeguard so that no "bonds" are accepted between particles of different residues, except on the case of peptide bonds (**C-N**) or bonds between nucleotides (**O3'-P**).
